@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const definitionEl = document.getElementById('definition');
   const messageEl = document.getElementById('message');
   const darkToggle = document.getElementById('darkToggle');
+  const playButton = document.getElementById('play-audio');
+  const audioPlayer = document.getElementById('audio-player');
 
   // Load dark mode preference
   chrome.storage.sync.get('darkMode', (data) => {
@@ -12,77 +14,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Get selected text from active tab
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs || tabs.length === 0) {
-      termEl.textContent = 'None';
-      messageEl.textContent = 'No active tab found.';
-      definitionEl.textContent = '';
-      return;
-    }
-    const tabId = tabs[0].id;
+  // Load latest definition from storage
+  chrome.storage.local.get('latestDefinition', (result) => {
+    const latest = result.latestDefinition;
 
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tabId },
-        func: () => window.getSelection().toString()
-      },
-      (results) => {
-        if (chrome.runtime.lastError || !results || results.length === 0) {
-          termEl.textContent = 'None';
-          messageEl.textContent = 'Could not get selected text.';
-          definitionEl.textContent = '';
-          return;
-        }
-        const selectedText = results[0].result.trim();
-        if (selectedText) {
-          termEl.textContent = selectedText;
-          messageEl.textContent = 'Loading definition...';
-          fetchDefinition(selectedText);
-        } else {
-          termEl.textContent = 'None';
-          messageEl.textContent = 'Highlight a medical term on the page first.';
-          definitionEl.textContent = '';
-        }
-      }
-    );
+    if (latest && latest.term && latest.data) {
+      showTermAndDefinition(latest.term, latest.data);
+    } else {
+      clearDisplay();
+    }
   });
 
-  // Fetch Merriam-Webster Medical API definition
-  function fetchDefinition(word) {
-    const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your API key
-    const url = `https://www.dictionaryapi.com/api/v3/references/medical/json/${encodeURIComponent(word)}?key=${apiKey}`;
+  // Display term, definition and setup audio if available
+  function showTermAndDefinition(term, data) {
+    termEl.textContent = term;
+    messageEl.textContent = '';
+    playButton.style.display = 'none';
+    definitionEl.textContent = '';
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        if (!Array.isArray(data) || data.length === 0) {
-          messageEl.textContent = 'No definition found.';
-          definitionEl.textContent = '';
-          return;
-        }
+    if (!Array.isArray(data) || data.length === 0) {
+      messageEl.textContent = 'No definition found.';
+      return;
+    }
 
-        // If API returns suggestions (strings)
-        if (typeof data[0] === 'string') {
-          messageEl.textContent = 'No exact match found. Suggestions: ' + data.join(', ');
-          definitionEl.textContent = '';
-          return;
-        }
+    if (typeof data[0] === 'string') {
+      messageEl.textContent = 'No exact match found. Suggestions: ' + data.join(', ');
+      return;
+    }
 
-        const shortdef = data[0].shortdef;
-        if (shortdef && shortdef.length > 0) {
-          messageEl.textContent = '';
-          definitionEl.textContent = shortdef.join('; ');
-        } else {
-          messageEl.textContent = 'Definition not available.';
-          definitionEl.textContent = '';
-        }
-      })
-      .catch(error => {
-        messageEl.textContent = 'Error fetching definition.';
-        definitionEl.textContent = '';
-        console.error('API fetch error:', error);
-      });
+    // Show definition(s)
+    const shortdef = data[0].shortdef;
+    if (shortdef && shortdef.length > 0) {
+      definitionEl.textContent = shortdef.join('; ');
+    } else {
+      messageEl.textContent = 'Definition not available.';
+    }
+
+    // Setup pronunciation audio if available
+    const prs = data[0].hwi?.prs;
+    if (prs && prs.length > 0 && prs[0].sound?.audio) {
+      const audioCode = prs[0].sound.audio;
+      const firstLetter = audioCode.charAt(0);
+      const audioUrl = `https://media.merriam-webster.com/audio/prons/en/us/mp3/${firstLetter}/${audioCode}.mp3`;
+
+      playButton.style.display = 'inline-flex';
+      playButton.onclick = () => {
+        audioPlayer.src = audioUrl;
+        audioPlayer.play();
+        playButton.classList.add('playing');
+      };
+
+      audioPlayer.onended = () => playButton.classList.remove('playing');
+      audioPlayer.onpause = () => playButton.classList.remove('playing');
+    } else {
+      playButton.style.display = 'none';
+      playButton.classList.remove('playing');
+    }
+  }
+
+  // Clear display when no term/definition available
+  function clearDisplay() {
+    termEl.textContent = 'None';
+    messageEl.textContent = 'Highlight a medical term on the page first.';
+    definitionEl.textContent = '';
+    playButton.style.display = 'none';
+    playButton.classList.remove('playing');
   }
 
   // Dark mode toggle handler

@@ -1,59 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MedTerm Lookup</title>
   <style>
     :root {
-      --bg-color: #f8f9fa;
-      --text-color: #333;
+      --bg-color: #ffffff;
+      --text-color: #333333;
       --header-bg: #2a7ae2;
-      --header-text: white;
+      --header-text: #ffffff;
+      --accent-color: #2a7ae2;
     }
+
     body.dark {
       --bg-color: #1e1e1e;
       --text-color: #f1f1f1;
-      --header-bg: #111;
+      --header-bg: #111111;
       --header-text: #f1f1f1;
+      --accent-color: #4da3ff;
     }
+
     body {
       margin: 0;
       padding: 0;
-      width: 320px;
-      font-family: "Segoe UI", Arial, sans-serif;
+      width: 340px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
     }
+
     header {
       background-color: var(--header-bg);
       color: var(--header-text);
-      padding: 10px;
+      padding: 12px 16px;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
+
     main {
-      padding: 15px;
+      padding: 16px;
     }
+
+    #term-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
     #term {
       font-weight: bold;
       font-size: 18px;
-      color: #2a7ae2;
-      margin-top: 8px;
+      color: var(--accent-color);
+      flex-grow: 1;
+      word-break: break-word;
     }
-    #message {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #555;
+
+    #play-audio {
+      display: none;
+      background-color: var(--accent-color);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      padding: 0;
     }
+
+    #play-audio svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    #play-audio:hover {
+      background-color: #1b5cb8;
+      transform: scale(1.1);
+    }
+
+    #play-audio:active {
+      transform: scale(0.95);
+    }
+
+    #play-audio.playing {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 8px var(--accent-color);
+      }
+      50% {
+        box-shadow: 0 0 16px var(--accent-color);
+      }
+    }
+
     #definition {
-      margin-top: 10px;
-      font-style: italic;
-      color: #555;
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      min-height: 40px;
       white-space: pre-wrap;
+      word-break: break-word;
     }
-    /* Dark mode toggle switch styling */
+
+    #message {
+      font-size: 13px;
+      margin-top: 8px;
+      color: #666;
+      min-height: 20px;
+    }
+
+    /* Dark mode toggle */
     .switch {
       position: relative;
       display: inline-block;
@@ -68,7 +140,10 @@
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-color: #ccc;
       transition: 0.3s;
       border-radius: 20px;
@@ -85,7 +160,7 @@
       border-radius: 50%;
     }
     input:checked + .slider {
-      background-color: #2a7ae2;
+      background-color: var(--accent-color);
     }
     input:checked + .slider:before {
       transform: translateX(20px);
@@ -95,17 +170,33 @@
 <body>
   <header>
     MedTerm Lookup
-    <label class="switch">
-      <input type="checkbox" id="darkToggle">
+    <label class="switch" title="Toggle dark mode">
+      <input type="checkbox" id="darkToggle" />
       <span class="slider"></span>
     </label>
   </header>
   <main>
     <div>Selected term:</div>
-    <div id="term">None</div>
+    <div id="term-section">
+      <div id="term">None</div>
+      <button
+        id="play-audio"
+        title="Play Pronunciation"
+        aria-label="Play pronunciation"
+        aria-pressed="false"
+        type="button"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      </button>
+    </div>
     <div id="message">Highlight a medical term on the page first.</div>
     <div id="definition"></div>
+    <audio id="audio-player"></audio>
   </main>
+
   <script src="popup.js"></script>
 </body>
 </html>

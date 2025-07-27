@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "MedTerm Lookup",
+  "version": "1.0",
+  "description": "Highlight a medical term and quickly search it on Merriam-Webster Medical Dictionary.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://www.dictionaryapi.com/*"
+  ],
+  "action": {
+    "default_title": "MedTerm Lookup",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

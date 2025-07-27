@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MedTerm Lookup</title>
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #333;
+      --header-bg: #2a7ae2;
+      --header-text: white;
+    }
+    body.dark {
+      --bg-color: #1e1e1e;
+      --text-color: #f1f1f1;
+      --header-bg: #111;
+      --header-text: #f1f1f1;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      width: 320px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      padding: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    main {
+      padding: 15px;
+    }
+    #term {
+      font-weight: bold;
+      font-size: 18px;
+      color: #2a7ae2;
+      margin-top: 8px;
+    }
+    #message {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+    }
+    #definition {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+      white-space: pre-wrap;
+    }
+    /* Dark mode toggle switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.3s;
+      border-radius: 20px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2a7ae2;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    MedTerm Lookup
+    <label class="switch">
+      <input type="checkbox" id="darkToggle">
+      <span class="slider"></span>
+    </label>
+  </header>
+  <main>
+    <div>Selected term:</div>
+    <div id="term">None</div>
+    <div id="message">Highlight a medical term on the page first.</div>
+    <div id="definition"></div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 # MedTermLookup
 MedTerm Lookup
+
 🌟 Project Overview
 MedTerm Lookup is a Chrome extension designed to help medical students and professionals quickly find definitions and pronunciations of medical terms directly from any webpage. Simply highlight a medical term, and the extension fetches clear definitions and audio pronunciations using the Merriam-Webster Medical Dictionary API — no need to leave your reading material!
 

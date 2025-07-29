@@ -1,7 +1,5 @@
 # Progress Log
 
-## July 27, 2025
-
 - Built a Chrome extension to look up medical terms on highlight.
 - Implemented Merriam-Webster Medical Dictionary API integration for definitions and pronunciation audio.
 - Added dark mode toggle for better UI.

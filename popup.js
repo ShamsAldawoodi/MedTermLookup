@@ -1,3 +1,5 @@
+// popup.js
+
 document.addEventListener('DOMContentLoaded', () => {
   const termEl = document.getElementById('term');
   const definitionEl = document.getElementById('definition');

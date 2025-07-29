@@ -45,4 +45,5 @@ What’s Next:
 
 Credits:
 Created by Shams Al-dawoodi
+
 API and audio data powered by Merriam-Webster Medical Dictionary
